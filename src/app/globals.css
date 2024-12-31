@@ -16,3 +16,6 @@ body {
   display: grid;
   justify-content: center;
 }
+.container-log-in-width{
+  width: 500px;
+}
