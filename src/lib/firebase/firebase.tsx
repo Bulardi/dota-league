@@ -5,7 +5,7 @@ import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDE202wONJDzy5KweHxdbzFoegASnFI7MY",
+    apiKey: "",
     authDomain: "dota-league-94e1b.firebaseapp.com",
     projectId: "dota-league-94e1b",
     storageBucket: "dota-league-94e1b.firebasestorage.app",
