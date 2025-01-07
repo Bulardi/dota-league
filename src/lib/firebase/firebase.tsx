@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "",
+    apiKey: process.env.NEXT_PUBLIC_API_KEY,
     authDomain: "dota-league-94e1b.firebaseapp.com",
     projectId: "dota-league-94e1b",
     storageBucket: "dota-league-94e1b.firebasestorage.app",
@@ -48,3 +48,4 @@ export const createAuthUserWithEmailAndPassword = async (email: string, password
     return await createUserWithEmailAndPassword(auth, email, password);
     
 }
+
