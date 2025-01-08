@@ -18,7 +18,7 @@ export default function Page() {
   }
 
   const handleSubmit = async (e: any) => {
-    const { name, email, password, repassword } = register;
+    
     e.preventDefault();
     if (password !== repassword) {
       alert("Passwords do not match")
@@ -40,7 +40,6 @@ export default function Page() {
   }
 
   const handleChange = (e: any) => {
-    console.log(e.target.value)
     setRegister({ 
       ...register,
       [e.target.name]: e.target.value
