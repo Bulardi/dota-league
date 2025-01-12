@@ -23,13 +23,13 @@ export default function Page() {
       console.log(response)
       resetFields()
     } catch (error) {
-
+      // feedback fali console.error
     }
   }
 
   const handleChange = (e: any) => {
     console.log(e.target.value)
-    setSignIn({ 
+    setSignIn({
       ...signIn,
       [e.target.name]: e.target.value
     });
@@ -39,10 +39,16 @@ export default function Page() {
   const SignIn = async () => {
     const { user } = await signInWithGooglePopup();
     const userDocRef = await createUserDocumentFromAuth(user)
+    //'userDocRef' is declared but its value is never read.ts(6133)
+    // 'userDocRef' is assigned a value but never used.eslint@typescript-eslint/no-unused-vars
+    // feedback: ne bi trebalo nikada da ostavljamo warninge, mislim da je ovde skroz ok da se loguje ovaj object userDocRef
   }
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* feedback: ali ako imam tailwind umesto custom class,a onda cu morati copy paste code?
+      odgovor: ne, mozes napraviti react komponentu koja je recimo FormContainer, koja ima u sebi recimo ovaj div (ili sta god da vec sheruju sve forme u tvojoj aplikaciji)
+      */}
       <div className="container-register-width flex justify-center mt-10">
         <div className="container-register">
           <label className="input input-bordered flex items-center gap-2">

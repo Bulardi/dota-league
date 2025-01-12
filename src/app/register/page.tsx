@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { createAuthUserWithEmailAndPassword, createUserDocumentFromAuth } from "@/lib/firebase/firebase"
 
+// feedback: ne bi bilo lose da imamo interface definisan koji se odnosi na ovaj objekat i koji kazuje kog su tipa polja i da li je neko nulabilno
 const formFields = {
   name: '',
   email: '',
@@ -10,15 +11,15 @@ const formFields = {
 }
 
 export default function Page() {
-  const [register, setRegister] = useState( formFields )
+  const [register, setRegister] = useState(formFields)
   const { name, email, password, repassword } = register
 
   const resetFields = () => {
-    setRegister( formFields )
+    setRegister(formFields)
   }
 
   const handleSubmit = async (e: any) => {
-    
+
     e.preventDefault();
     if (password !== repassword) {
       alert("Passwords do not match")
@@ -35,12 +36,13 @@ export default function Page() {
         console.log("User credential not returned.");
       }
     } catch (error) {
+      // feedback: console.error
       console.log("Failure", error);
     }
   }
 
   const handleChange = (e: any) => {
-    setRegister({ 
+    setRegister({
       ...register,
       [e.target.name]: e.target.value
     });
@@ -57,6 +59,7 @@ export default function Page() {
   // };
   return (
     <form onSubmit={handleSubmit}>
+      {/* feedback: tailwind umesto custom clasa */}
       <div className="container-register-width flex justify-center mt-10">
         <div className="container-register">
           <label className="input input-bordered flex items-center gap-2">
