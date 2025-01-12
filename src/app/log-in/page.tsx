@@ -3,7 +3,12 @@ import { createUserDocumentFromAuth, signInWithGooglePopup, SignInAuthUserWithEm
 
 import React, { useState } from "react";
 
-const defaultFields = {
+export interface logInFields{
+  email:string,
+  password:string
+}
+
+const defaultFields:logInFields = {
   email: '',
   password: ''
 }
@@ -23,12 +28,11 @@ export default function Page() {
       console.log(response)
       resetFields()
     } catch (error) {
-
+      console.error
     }
   }
 
   const handleChange = (e: any) => {
-    console.log(e.target.value)
     setSignIn({ 
       ...signIn,
       [e.target.name]: e.target.value
@@ -39,22 +43,36 @@ export default function Page() {
   const SignIn = async () => {
     const { user } = await signInWithGooglePopup();
     const userDocRef = await createUserDocumentFromAuth(user)
+    console.log(userDocRef,"UserDocRef")
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="container-register-width flex justify-center mt-10">
-        <div className="container-register">
+      <div className="flex justify-center mt-10">
+        <div>
           <label className="input input-bordered flex items-center gap-2">
             Email
-            <input type="email" name="email" className="grow" onChange={handleChange} value={email} placeholder="milos@gmail.com" />
+            <input 
+            type="email" 
+            name="email" 
+            className="grow" 
+            onChange={handleChange} 
+            value={email} 
+            placeholder="milos@gmail.com" />
           </label>
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2">
             Password
-            <input type="password" name="password" className="grow" required onChange={handleChange} value={password} />
+            <input 
+            type="password" 
+            name="password" 
+            className="grow"
+            required 
+            onChange={handleChange} 
+            value={password} />
           </label>
-          <button type='submit' className="btn">Log In</button>or
-          <button onClick={SignIn} type="button" className="btn"> Log in With Google</button>
+          <button type='submit' className="btn mt-2 mr-2">Log In</button>
+          <span className="font-bold">or</span>
+          <button onClick={SignIn} type="button" className="btn ml-2"> Log in With Google</button>
         </div>
       </div>
     </form>

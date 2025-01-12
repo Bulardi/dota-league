@@ -2,7 +2,14 @@
 import { useState } from "react"
 import { createAuthUserWithEmailAndPassword, createUserDocumentFromAuth } from "@/lib/firebase/firebase"
 
-const formFields = {
+export interface registerFields{
+  name:string,
+  email:string,
+  password:string,
+  repassword:string
+}
+
+const formFields:registerFields = {
   name: '',
   email: '',
   password: '',
@@ -35,7 +42,7 @@ export default function Page() {
         console.log("User credential not returned.");
       }
     } catch (error) {
-      console.log("Failure", error);
+      console.error("Failed to log in")
     }
   }
 
@@ -67,7 +74,7 @@ export default function Page() {
               value={name}
               onChange={handleChange} placeholder="Milos Bulajic" />
           </label>
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2">
             Email
             <input
               type="email"
@@ -75,7 +82,7 @@ export default function Page() {
               value={email}
               onChange={handleChange} placeholder="milosbulajic@gmail.com" />
           </label>
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2">
             Password
             <input
               type="password"
@@ -83,7 +90,7 @@ export default function Page() {
               value={password}
               onChange={handleChange} className="grow" />
           </label>
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2">
             Confirm Password
             <input
               type="password"
@@ -91,7 +98,7 @@ export default function Page() {
               value={repassword}
               onChange={handleChange} className="grow" />
           </label>
-          <button type='submit' className="btn">Register</button>
+          <button type='submit' className="btn mt-2">Register</button>
         </div>
       </div>
     </form>

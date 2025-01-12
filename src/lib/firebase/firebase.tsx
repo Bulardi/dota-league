@@ -6,11 +6,11 @@ import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_API_KEY,
-    authDomain: "dota-league-94e1b.firebaseapp.com",
-    projectId: "dota-league-94e1b",
-    storageBucket: "dota-league-94e1b.firebasestorage.app",
-    messagingSenderId: "910446673274",
-    appId: "1:910446673274:web:cc0be593d0125de58ceac3"
+    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_APP_ID
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -22,9 +22,10 @@ googleProvider.setCustomParameters({
 export const auth = getAuth(app);
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider)
 export const db = getFirestore();
+const databaseName='users';
 
 export const createUserDocumentFromAuth = async (userAuth: any, adidtionalInformation:any ={}) => {
-    const userDocRef = doc(db, 'users', userAuth.uid)
+    const userDocRef = doc(db, databaseName, userAuth.uid)
     const userSnaphot = await getDoc(userDocRef)
     if (!userSnaphot.exists()) {
         const { displayName, email } = userAuth;
@@ -36,7 +37,7 @@ export const createUserDocumentFromAuth = async (userAuth: any, adidtionalInform
                 ...adidtionalInformation
             })
         } catch (error: any) {
-            console.log("error creating user", error.message)
+            console.error("Error while creating user")
         }
     }
     return userDocRef;
