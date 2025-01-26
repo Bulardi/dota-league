@@ -2,20 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/* body {
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  height: 100%; /* Ensure the elements fill the entire viewport height */
+  margin: 0; /* Remove default margins */
+  background-color: white; /* Set a consistent background color */
+  color: black;
 }
-.container-register-width{
-  width: 100%;
-}
-.container-register{
-  width: 400px;
-}
-.container-register-flex{
-  display: grid;
-  justify-content: center;
-}
-.container-log-in-width{
-  width: 500px;
-} */

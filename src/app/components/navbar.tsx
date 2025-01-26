@@ -4,11 +4,12 @@ export default function Navbar() {
   const routerConfig={
     home:'/',
     login:'/log-in',
-    register:'register'
+    register:'register',
+    crud:'crud'
   }
   return (
     <>
-    <div className="navbar bg-base-100 border-b border-black">
+    <div className="navbar border-b border-black">
       <div className="flex-1">
         <Link href={routerConfig.home} className='font-bold'>Landing Page</Link>
       </div>
@@ -19,6 +20,9 @@ export default function Navbar() {
           </li>
           <li>
             <Link href={routerConfig.register} className='font-bold'>Register</Link>
+          </li>
+          <li>
+            <Link href={routerConfig.crud} className='font-bold'>CRUD</Link>
           </li>
         </ul>
       </div>

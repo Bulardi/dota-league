@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
@@ -22,9 +22,9 @@ googleProvider.setCustomParameters({
 export const auth = getAuth(app);
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider)
 export const db = getFirestore();
-const databaseName='users';
+const databaseName = 'users';
 
-export const createUserDocumentFromAuth = async (userAuth: any, adidtionalInformation:any ={}) => {
+export const createUserDocumentFromAuth = async (userAuth: any, adidtionalInformation: any = {}) => {
     const userDocRef = doc(db, databaseName, userAuth.uid)
     const userSnaphot = await getDoc(userDocRef)
     if (!userSnaphot.exists()) {
@@ -47,11 +47,50 @@ export const createAuthUserWithEmailAndPassword = async (email: string, password
     if (!email || !password) return;
     console.log('unio se mail i pass u database')
     return await createUserWithEmailAndPassword(auth, email, password);
-    
+
 }
 
 export const SignInAuthUserWithEmailAndPassword = async (email: string, password: string) => {
     if (!email || !password) return;
-    return await signInWithEmailAndPassword(auth,email,password);
-    
+    return await signInWithEmailAndPassword(auth, email, password);
+
+}
+//Fetchovanje itema
+export const FetchItems = async () => {
+    const itemsCollection = collection(db, "items")
+    const querySnapshot = await getDocs(itemsCollection)
+    const items: any = [];
+    querySnapshot.forEach((doc) => {
+        const itemsData = doc.data()
+        items.push({ id: doc.id, ...itemsData })
+    })
+    return items;
+}
+
+//Dodavanje itema
+export const AddItems = async (item: any) => {
+    if (item!=="") {
+        try {
+            const docRef = await addDoc(collection(db, "items"), {
+                item: item
+            })
+            console.log("Added item with ID", docRef.id)
+        } catch (error) {
+            console.error("Didn't add item to the firebase")
+        }
+    }
+    else{
+        console.error("Input can't be empty string")
+    }
+}
+
+
+//Brisanje itema
+export const DeleteItems = async (itemId: string) => {
+    try {
+        await deleteDoc(doc(db, "items", itemId));
+        return itemId;
+    } catch (error) {
+        console.error("Item is not deleted or does not exist", error)
+    }
 }
