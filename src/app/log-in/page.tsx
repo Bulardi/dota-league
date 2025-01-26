@@ -55,7 +55,7 @@ export default function Page() {
             <input 
             type="email" 
             name="email" 
-            className="grow" 
+            className="grow bg-white" 
             onChange={handleChange} 
             value={email} 
             placeholder="milos@gmail.com" />

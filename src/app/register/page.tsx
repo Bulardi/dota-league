@@ -67,15 +67,16 @@ export default function Page() {
       {/* feedback: tailwind umesto custom clasa */}
       <div className="container-register-width flex justify-center mt-10">
         <div className="container-register">
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered flex items-center gap-2 bg-white">
             Name
             <input
+            className="bg-white"
               type="text"
               name='name'
               value={name}
               onChange={handleChange} placeholder="Milos Bulajic" />
           </label>
-          <label className="input input-bordered flex items-center gap-2 mt-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Email
             <input
               type="email"
@@ -83,7 +84,7 @@ export default function Page() {
               value={email}
               onChange={handleChange} placeholder="milosbulajic@gmail.com" />
           </label>
-          <label className="input input-bordered flex items-center gap-2 mt-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Password
             <input
               type="password"
@@ -91,7 +92,7 @@ export default function Page() {
               value={password}
               onChange={handleChange} className="grow" />
           </label>
-          <label className="input input-bordered flex items-center gap-2 mt-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Confirm Password
             <input
               type="password"
@@ -99,7 +100,7 @@ export default function Page() {
               value={repassword}
               onChange={handleChange} className="grow" />
           </label>
-          <button type='submit' className="btn mt-2">Register</button>
+          <button type='submit' className="btn mt-2 bg-white text-black">Register</button>
         </div>
       </div>
     </form>
