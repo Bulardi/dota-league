@@ -4,6 +4,8 @@ import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteD
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
+
+// feedback: ja bih i ostale stvari stavio u env
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -69,7 +71,7 @@ export const FetchItems = async () => {
 
 //Dodavanje itema
 export const AddItems = async (item: any) => {
-    if (item!=="") {
+    if (item !== "") {
         try {
             const docRef = await addDoc(collection(db, "items"), {
                 item: item
@@ -79,7 +81,7 @@ export const AddItems = async (item: any) => {
             console.error("Didn't add item to the firebase")
         }
     }
-    else{
+    else {
         console.error("Input can't be empty string")
     }
 }

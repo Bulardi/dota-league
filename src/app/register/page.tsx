@@ -17,15 +17,15 @@ const formFields:registerFields = {
 }
 
 export default function Page() {
-  const [register, setRegister] = useState( formFields )
+  const [register, setRegister] = useState(formFields)
   const { name, email, password, repassword } = register
 
   const resetFields = () => {
-    setRegister( formFields )
+    setRegister(formFields)
   }
 
   const handleSubmit = async (e: any) => {
-    
+
     e.preventDefault();
     if (password !== repassword) {
       alert("Passwords do not match")
@@ -47,7 +47,7 @@ export default function Page() {
   }
 
   const handleChange = (e: any) => {
-    setRegister({ 
+    setRegister({
       ...register,
       [e.target.name]: e.target.value
     });
@@ -64,6 +64,7 @@ export default function Page() {
   // };
   return (
     <form onSubmit={handleSubmit}>
+      {/* feedback: tailwind umesto custom clasa */}
       <div className="container-register-width flex justify-center mt-10">
         <div className="container-register">
           <label className="input input-bordered flex items-center gap-2">
