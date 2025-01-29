@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
@@ -60,7 +60,7 @@ export const SignInAuthUserWithEmailAndPassword = async (email: string, password
 //Fetchovanje itema
 export const FetchItems = async () => {
     const itemsCollection = collection(db, "items")
-    const querySnapshot = await getDocs(itemsCollection)
+    const querySnapshot = await getDocs(query(itemsCollection,orderBy("date")))
     const items: any = [];
     querySnapshot.forEach((doc) => {
         const itemsData = doc.data()
@@ -70,11 +70,12 @@ export const FetchItems = async () => {
 }
 
 //Dodavanje itema
-export const AddItems = async (item: any) => {
-    if (item !== "") {
+export const AddItems = async (item: any, date: any) => {
+    if (item !== "" || date !== "") {
         try {
             const docRef = await addDoc(collection(db, "items"), {
-                item: item
+                item: item,
+                date: date
             })
             console.log("Added item with ID", docRef.id)
         } catch (error) {

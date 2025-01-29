@@ -8,3 +8,7 @@ html, body {
   background-color: white; /* Set a consistent background color */
   color: black;
 }
+
+.btn:hover{
+  background-color: rgb(198, 198, 198);
+}

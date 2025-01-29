@@ -50,7 +50,7 @@ export default function Page() {
     <form onSubmit={handleSubmit}>
       <div className="flex justify-center mt-10">
         <div>
-          <label className="input input-bordered flex items-center gap-2">
+          <label className="input input-bordered flex items-center gap-2 bg-white">
             Email
             <input 
             type="email" 
@@ -60,7 +60,7 @@ export default function Page() {
             value={email} 
             placeholder="milos@gmail.com" />
           </label>
-          <label className="input input-bordered flex items-center gap-2 mt-2">
+          <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Password
             <input 
             type="password" 
@@ -70,9 +70,9 @@ export default function Page() {
             onChange={handleChange} 
             value={password} />
           </label>
-          <button type='submit' className="btn mt-2 mr-2">Log In</button>
+          <button type='submit' className="btn mt-2 mr-2 bg-white text-black">Log In</button>
           <span className="font-bold">or</span>
-          <button onClick={SignIn} type="button" className="btn ml-2"> Log in With Google</button>
+          <button onClick={SignIn} type="button" className="btn ml-2 bg-white text-black"> Log in With Google</button>
         </div>
       </div>
     </form>
