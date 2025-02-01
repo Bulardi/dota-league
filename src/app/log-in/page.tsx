@@ -21,21 +21,21 @@ export default function Page() {
     setSignIn(defaultFields)
   }
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const response = await SignInAuthUserWithEmailAndPassword(email, password)
       console.log(response)
       resetFields()
     } catch (error) {
-      console.error
+      console.error(error)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignIn({ 
       ...signIn,
-      [e.target.name]: e.target.value
+      [e.currentTarget.name]: e.currentTarget.value
     });
   };
 

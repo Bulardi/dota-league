@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, User } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { CrudItemsProps } from "@/app/components/CrudItems";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
 
-// feedback: ja bih i ostale stvari stavio u env
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -25,8 +25,9 @@ export const auth = getAuth(app);
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider)
 export const db = getFirestore();
 const databaseName = 'users';
+const dataBaseNameItems= 'items';
 
-export const createUserDocumentFromAuth = async (userAuth: any, adidtionalInformation: any = {}) => {
+export const createUserDocumentFromAuth = async (userAuth: User, adidtionalInformation: Record<string,any> = {}) => {
     const userDocRef = doc(db, databaseName, userAuth.uid)
     const userSnaphot = await getDoc(userDocRef)
     if (!userSnaphot.exists()) {
@@ -38,8 +39,8 @@ export const createUserDocumentFromAuth = async (userAuth: any, adidtionalInform
                 email,
                 ...adidtionalInformation
             })
-        } catch (error: any) {
-            console.error("Error while creating user")
+        } catch (error) {
+            console.error("Error while creating user",error)
         }
     }
     return userDocRef;
@@ -58,28 +59,32 @@ export const SignInAuthUserWithEmailAndPassword = async (email: string, password
 
 }
 //Fetchovanje itema
-export const FetchItems = async () => {
-    const itemsCollection = collection(db, "items")
-    const querySnapshot = await getDocs(query(itemsCollection,orderBy("date")))
-    const items: any = [];
-    querySnapshot.forEach((doc) => {
-        const itemsData = doc.data()
-        items.push({ id: doc.id, ...itemsData })
-    })
+//The <T extends Record<string, any>> ensures T is a generic object type.
+//Promise <T[]> knows that FetchItems returns an array of objects matching T
+export const FetchItems = async <T extends Record<string, any>>(): Promise<T[]> => {
+    const itemsCollection = collection(db, dataBaseNameItems);
+    const querySnapshot = await getDocs(query(itemsCollection, orderBy("date")));
+    const items: T[] = querySnapshot.docs.map((doc) => ({
+        // docs je property od querySnapshot koji predstavlja niz QueryDocumentSnapshot<DocumentData> objects u Firebase
+        id: doc.id,
+        ...(doc.data() as T),
+    }));
+    console.log(items,"items")
     return items;
-}
+};
 
 //Dodavanje itema
-export const AddItems = async (item: any, date: any) => {
-    if (item !== "" || date !== "") {
+export const AddItems = async (item: any) => {
+    const currentDate = new Date();
+    if (item !== "" || !currentDate) {
         try {
-            const docRef = await addDoc(collection(db, "items"), {
+            const docRef = await addDoc(collection(db, dataBaseNameItems), {
                 item: item,
-                date: date
+                date: currentDate
             })
             console.log("Added item with ID", docRef.id)
         } catch (error) {
-            console.error("Didn't add item to the firebase")
+            console.error("Didn't add item to the firebase",error)
         }
     }
     else {
@@ -91,7 +96,7 @@ export const AddItems = async (item: any, date: any) => {
 //Brisanje itema
 export const DeleteItems = async (itemId: string) => {
     try {
-        await deleteDoc(doc(db, "items", itemId));
+        await deleteDoc(doc(db, dataBaseNameItems, itemId));
         return itemId;
     } catch (error) {
         console.error("Item is not deleted or does not exist", error)

@@ -24,8 +24,7 @@ export default function Page() {
     setRegister(formFields)
   }
 
-  const handleSubmit = async (e: any) => {
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password !== repassword) {
       alert("Passwords do not match")
@@ -42,29 +41,19 @@ export default function Page() {
         console.log("User credential not returned.");
       }
     } catch (error) {
-      console.error("Failed to log in")
+      console.error("Failed to log in",error)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRegister({
       ...register,
       [e.target.name]: e.target.value
     });
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   await fetch('/api/register', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify(register),
-  //   });
-  // };
   return (
     <form onSubmit={handleSubmit}>
-      {/* feedback: tailwind umesto custom clasa */}
       <div className="container-register-width flex justify-center mt-10">
         <div className="container-register">
           <label className="input input-bordered flex items-center gap-2 bg-white">

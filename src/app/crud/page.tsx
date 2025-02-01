@@ -2,11 +2,9 @@
 import { useEffect, useState } from "react"
 import { FetchItems, AddItems, DeleteItems } from "@/lib/firebase/firebase"
 import CrudItems from "../components/CrudItems"
-import { Suspense } from "react"
 
 export default function Page() {
     const [item, setItem] = useState("")
-    const [date, setDate] = useState<any>()
     const [items, setItems] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -16,7 +14,7 @@ export default function Page() {
                 const fetchedItems = await FetchItems()
                 setItems(fetchedItems)
             } catch (error) {
-                console.error()
+                console.error(error)
             } finally {
                 setLoading(false)
             }
@@ -25,28 +23,26 @@ export default function Page() {
     }, [])
 
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async () => {
         try {
             setItem("")
             setLoading(true)
-            const currentDate = new Date();
-            setDate(currentDate);
-            await AddItems(item, date)
+            await AddItems(item)
             const fetchedItems = await FetchItems()
             setItems(fetchedItems)
             setLoading(false)
         } catch (error) {
-            console.error
+            console.error("Greska u handle submitu",error)
         }
     }
 
-    const handleItems = (e: any) => {
-        setItem(e.target.value);
+    const handleItems = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setItem(e.currentTarget.value);
     }
 
-    const deleteItem = async (e: any) => {
+    const deleteItem = async (e: React.MouseEvent<HTMLButtonElement>) => {
         setLoading(true)
-        await DeleteItems(e.target.value)
+        await DeleteItems(e.currentTarget.value)
         console.log("Izbrisan item")
         const fetchedItems = await FetchItems()
         setItems(fetchedItems)

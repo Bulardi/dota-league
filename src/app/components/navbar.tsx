@@ -1,12 +1,7 @@
 import Link from 'next/link'
+import routerConfig from '../config/routes'
 
 export default function Navbar() {
-  const routerConfig={
-    home:'/',
-    login:'/log-in',
-    register:'register',
-    crud:'crud'
-  }
   return (
     <>
     <div className="navbar border-b border-black">
