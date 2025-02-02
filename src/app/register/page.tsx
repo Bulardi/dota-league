@@ -1,97 +1,105 @@
 'use client'
-import { useState } from "react"
 import { createAuthUserWithEmailAndPassword, createUserDocumentFromAuth } from "@/lib/firebase/firebase"
+import { useForm } from "react-hook-form"
 
-export interface registerFields{
-  name:string,
-  email:string,
-  password:string,
-  repassword:string
-}
 
-const formFields:registerFields = {
-  name: '',
-  email: '',
-  password: '',
-  repassword: ''
+export interface registerFields {
+  name: string,
+  email: string,
+  password: string,
+  repassword: string
 }
 
 export default function Page() {
-  const [register, setRegister] = useState(formFields)
-  const { name, email, password, repassword } = register
-
-  const resetFields = () => {
-    setRegister(formFields)
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (password !== repassword) {
-      alert("Passwords do not match")
-      return;
+  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<registerFields>({
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      repassword: ''
     }
+  });
 
+  const validatePassword = watch('password')
+
+  const onSubmit = async ({ name, email, password}: registerFields) => {
     try {
       const userCredential = await createAuthUserWithEmailAndPassword(email, password);
-
       if (userCredential && userCredential.user) {
         await createUserDocumentFromAuth(userCredential.user, { name });
-        resetFields()
+        reset();
       } else {
         console.log("User credential not returned.");
       }
     } catch (error) {
-      console.error("Failed to log in",error)
+      console.error("Failed to register", error)
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRegister({
-      ...register,
-      [e.target.name]: e.target.value
-    });
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="container-register-width flex justify-center mt-10">
         <div className="container-register">
+
           <label className="input input-bordered flex items-center gap-2 bg-white">
             Name
             <input
-            className="bg-white"
+              className="bg-white"
               type="text"
-              name='name'
-              value={name}
-              onChange={handleChange} placeholder="Milos Bulajic" />
+              {...register("name", {
+                required: "Name is Required",
+              })}
+              placeholder="Milos Bulajic" />
           </label>
+          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+
           <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Email
             <input
               type="email"
-              name='email'
-              value={email}
-              onChange={handleChange} placeholder="milosbulajic@gmail.com" />
+              {...register("email", {
+                required: "Email is Required",
+
+              })}
+              placeholder="milosbulajic@gmail.com" />
           </label>
+          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+
           <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Password
             <input
               type="password"
-              name='password'
-              value={password}
-              onChange={handleChange} className="grow" />
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters."
+                },
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*[\W_])/,
+                  message: "Password must contain at least 1 uppercase letter and 1 special character."
+                },
+              })}
+              className="grow" />
           </label>
+          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+
           <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Confirm Password
             <input
               type="password"
-              name='repassword'
-              value={repassword}
-              onChange={handleChange} className="grow" />
+              {...register("repassword", {
+                required: "This field is Required",
+                validate: value => value === validatePassword || "Passwords do not match"
+              })}
+              className="grow" />
           </label>
+          {errors.repassword && <p className="text-red-500 text-sm">{errors.repassword.message}</p>}
+
           <button type='submit' className="btn mt-2 bg-white text-black">Register</button>
         </div>
       </div>
     </form>
   )
 }
+
