@@ -3,7 +3,7 @@ import { createUserDocumentFromAuth, signInWithGooglePopup, SignInAuthUserWithEm
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import routerConfig from "../config/routes";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export interface logInFields {
   email: string,
@@ -28,6 +28,7 @@ export default function Page() {
       const response = await SignInAuthUserWithEmailAndPassword(email, password)
       queryClient.setQueryData(["authUser"], response!.user)
       router.push(routerConfig.home);
+      console.log(response,"User data form login")
     } catch (error) {
       console.error(error)
     }
@@ -38,6 +39,7 @@ export default function Page() {
     const { user } = await signInWithGooglePopup();
     const userDocRef = await createUserDocumentFromAuth(user)
     queryClient.setQueryData(["authUser"], user)
+    router.push(routerConfig.home);
     console.log(userDocRef, "UserDocRef")
   }
 

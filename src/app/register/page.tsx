@@ -1,5 +1,7 @@
 'use client'
 import { createAuthUserWithEmailAndPassword, createUserDocumentFromAuth } from "@/lib/firebase/firebase"
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form"
 
 
@@ -19,14 +21,17 @@ export default function Page() {
       repassword: ''
     }
   });
-
+  const router = useRouter();
+  const queryClient = useQueryClient()
+  
   const validatePassword = watch('password')
 
-  const onSubmit = async ({ name, email, password}: registerFields) => {
+  const onSubmit = async ({ name, email, password }: registerFields) => {
     try {
       const userCredential = await createAuthUserWithEmailAndPassword(email, password);
       if (userCredential && userCredential.user) {
         await createUserDocumentFromAuth(userCredential.user, { name });
+        console.log(userCredential, "User data na register page")
         reset();
       } else {
         console.log("User credential not returned.");

@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react"
 import { FetchItems, AddItems, DeleteItems } from "@/lib/firebase/firebase"
 import CrudItems from "../components/CrudItems"
-import { Suspense } from "react"
 
 export default function Page() {
   const [item, setItem] = useState("")
