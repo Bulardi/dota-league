@@ -1,27 +1,33 @@
 'use client'
 import { createUserDocumentFromAuth, signInWithGooglePopup, SignInAuthUserWithEmailAndPassword } from "@/lib/firebase/firebase";
-
-import React, { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import routerConfig from "../config/routes";
+import { redirect, useRouter } from "next/navigation";
 
-export interface logInFields{
-  email:string,
-  password:string
+export interface logInFields {
+  email: string,
+  password: string
 }
 
 export default function Page() {
-  const {register,handleSubmit}= useForm<logInFields>({
-    defaultValues:{
-      email:'',
-      password:''
+  const router = useRouter();
+  const queryClient = useQueryClient()
+  //const {isPending, isError,data,error}= useQuery()
+
+  const { register, handleSubmit } = useForm<logInFields>({
+    defaultValues: {
+      email: '',
+      password: ''
     }
   })
 
 
-  const signInSubmit = async ({email,password}:logInFields) => {
+  const signInSubmit = async ({ email, password }: logInFields) => {
     try {
       const response = await SignInAuthUserWithEmailAndPassword(email, password)
-      console.log(response)
+      queryClient.setQueryData(["authUser"], response!.user)
+      router.push(routerConfig.home);
     } catch (error) {
       console.error(error)
     }
@@ -31,29 +37,31 @@ export default function Page() {
   const SignIn = async () => {
     const { user } = await signInWithGooglePopup();
     const userDocRef = await createUserDocumentFromAuth(user)
-    console.log(userDocRef,"UserDocRef")
+    queryClient.setQueryData(["authUser"], user)
+    console.log(userDocRef, "UserDocRef")
   }
 
   return (
     <form onSubmit={handleSubmit(signInSubmit)}>
+      <p></p>
       <div className="flex justify-center mt-10">
         <div>
           <label className="input input-bordered flex items-center gap-2 bg-white">
             Email
-            <input 
-            type="email" 
-            {...register("email")}
-            className="grow bg-white" 
-            placeholder="example@gmail.com" />
+            <input
+              type="email"
+              {...register("email")}
+              className="grow bg-white"
+              placeholder="example@gmail.com" />
           </label>
           <label className="input input-bordered flex items-center gap-2 mt-2 bg-white">
             Password
-            <input 
-            type="password" 
-            {...register("password")}
-            className="grow"
-            required 
-              />
+            <input
+              type="password"
+              {...register("password")}
+              className="grow"
+              required
+            />
           </label>
           <button type='submit' className="btn mt-2 mr-2 bg-white text-black">Log In</button>
           <span className="font-bold">or</span>
