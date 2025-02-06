@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, User, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, User, setPersistence, browserSessionPersistence, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { useEffect, useState } from "react";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
@@ -27,9 +28,9 @@ googleProvider.setCustomParameters({
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider)
 export const db = getFirestore();
 const databaseName = 'users';
-const dataBaseNameItems= 'items';
+const dataBaseNameItems = 'items';
 
-export const createUserDocumentFromAuth = async (userAuth: User, adidtionalInformation: Record<string,any> = {}) => {
+export const createUserDocumentFromAuth = async (userAuth: User, adidtionalInformation: Record<string, any> = {}) => {
     const userDocRef = doc(db, databaseName, userAuth.uid)
     const userSnaphot = await getDoc(userDocRef)
     if (!userSnaphot.exists()) {
@@ -42,7 +43,7 @@ export const createUserDocumentFromAuth = async (userAuth: User, adidtionalInfor
                 ...adidtionalInformation
             })
         } catch (error) {
-            console.error("Error while creating user",error)
+            console.error("Error while creating user", error)
         }
     }
     return userDocRef;
@@ -71,7 +72,7 @@ export const FetchItems = async <T extends Record<string, any>>(): Promise<T[]> 
         id: doc.id,
         ...(doc.data() as T),
     }));
-    console.log(items,"items")
+    console.log(items, "items")
     return items;
 };
 
@@ -86,7 +87,7 @@ export const AddItems = async (item: any) => {
             })
             console.log("Added item with ID", docRef.id)
         } catch (error) {
-            console.error("Didn't add item to the firebase",error)
+            console.error("Didn't add item to the firebase", error)
         }
     }
     else {
@@ -103,4 +104,29 @@ export const DeleteItems = async (itemId: string) => {
     } catch (error) {
         console.error("Item is not deleted or does not exist", error)
     }
+}
+
+
+export default function useAuthUser() {
+    const [user, setUser] = useState<User | null>(null)
+    const auth = getAuth();
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser)
+            setLoading(false);
+        })
+        return () => unsubscribe()
+    }, [auth])
+
+    const logOut = async () => {
+        try {
+            await signOut(auth)
+        } catch (error) {
+            console.error("Error logging out", error)
+        }
+    }
+    console.log(user,"Korisnik u useAuthUser")
+    return { user, loading, logOut }
 }

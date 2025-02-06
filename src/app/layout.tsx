@@ -13,14 +13,7 @@ export default function RootLayout({
 }) {
   const [queryClient] = React.useState(
     () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            gcTime: 1000 * 60 * 60 * 24,
-            staleTime: 60 * 1000,
-          },
-        },
-      }),
+      new QueryClient({}),
   )
   return (
     <html lang="en">

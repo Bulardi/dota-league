@@ -1,15 +1,30 @@
 'use client'
-import { useAuthUser } from "./react-query/react-query"
+
+import useAuthUser from "@/lib/firebase/firebase"
 
 export default function Page() {
-const {data:user}= useAuthUser()
-
-console.log(user)
+  const { user, loading } = useAuthUser();
+  // console.log(user)
+  if (loading) {
+    return <div className='p-10 border-2 border-black m-2'>
+      <p>Podaci se ucitavaju</p>
+      <span className="loading loading-spinner loading-xs"></span>
+    </div>
+  }
   return (
     <div>
-      <p>Podaci o korisniku:{user?.email} </p>
-      <p className='p-10 border-2 border-black m-2'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem error laboriosam, praesentium vero amet at! Impedit ea provident est accusantium, facere magni incidunt necessitatibus, ipsum dolor totam unde dolore molestias!</p>
-    </div>
+      {user ? (<>
+        <p className='p-10 border-2 border-black m-2'>Korisnicki mail: {user?.email}</p>
+        <p className='p-10 border-2 border-black m-2'>Korisnicki uid: {user?.uid}</p>
+      </>
+
+      ) : (<>
+        <p className='p-10 border-2 border-black m-2'>Korisnik nije ulogovan!!!</p>
+
+      </>)
+      }
+
+    </div >
   )
 }
 
