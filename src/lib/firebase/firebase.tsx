@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 // Your web app's Firebase configuration
 
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_APP_ID
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -106,15 +106,24 @@ export const DeleteItems = async (itemId: string) => {
     }
 }
 
-
-export default function useAuthUser() {
+interface UserData{
+    name?:string
+}
+export function useAuthUser() {
     const [user, setUser] = useState<User | null>(null)
     const auth = getAuth();
     const [loading, setLoading] = useState(true)
+    const [userData, setUserData] = useState<UserData|null>(null)
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser)
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                const userDocRef = doc(db, databaseName, currentUser.uid);
+                const userSnapshot = await getDoc(userDocRef)
+                const data = userSnapshot.exists() ? userSnapshot.data() : null;
+                setUserData(data)
+            }
+            setUser(auth.currentUser)
             setLoading(false);
         })
         return () => unsubscribe()
@@ -127,6 +136,6 @@ export default function useAuthUser() {
             console.error("Error logging out", error)
         }
     }
-    console.log(user,"Korisnik u useAuthUser")
-    return { user, loading, logOut }
+    console.log(user, "Korisnik u useAuthUser")
+    return { user, loading, logOut,userData }
 }

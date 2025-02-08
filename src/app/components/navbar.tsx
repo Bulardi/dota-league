@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import routerConfig from '../config/routes'
-import useAuthUser from '@/lib/firebase/firebase'
+import {useAuthUser} from '@/lib/firebase/firebase'
 
 export default function Navbar() {
   const { user, loading, logOut } = useAuthUser()

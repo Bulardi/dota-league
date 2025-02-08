@@ -3,6 +3,7 @@ import { createAuthUserWithEmailAndPassword, createUserDocumentFromAuth } from "
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form"
+import routerConfig from "../config/routes";
 
 
 export interface registerFields {
@@ -12,7 +13,7 @@ export interface registerFields {
   repassword: string
 }
 
-export default function Page() {
+export default function Register() {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<registerFields>({
     defaultValues: {
       name: '',
@@ -22,7 +23,6 @@ export default function Page() {
     }
   });
   const router = useRouter();
-  const queryClient = useQueryClient()
   
   const validatePassword = watch('password')
 
@@ -31,6 +31,7 @@ export default function Page() {
       const userCredential = await createAuthUserWithEmailAndPassword(email, password);
       if (userCredential && userCredential.user) {
         await createUserDocumentFromAuth(userCredential.user, { name });
+        router.push(routerConfig.home);
         console.log(userCredential, "User data na register page")
         reset();
       } else {

@@ -26,9 +26,8 @@ export default function Page() {
   const signInSubmit = async ({ email, password }: logInFields) => {
     try {
       const response = await SignInAuthUserWithEmailAndPassword(email, password)
-      queryClient.setQueryData(["authUser"], response!.user)
-      router.push(routerConfig.home);
       console.log(response,"User data form login")
+      router.push(routerConfig.home);
     } catch (error) {
       console.error(error)
     }
