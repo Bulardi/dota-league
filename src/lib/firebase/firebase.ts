@@ -106,28 +106,41 @@ export const DeleteItems = async (itemId: string) => {
     }
 }
 
-interface UserData{
-    name?:string
+interface UserData {
+    name?: string
 }
 export function useAuthUser() {
     const [user, setUser] = useState<User | null>(null)
-    const auth = getAuth();
     const [loading, setLoading] = useState(true)
-    const [userData, setUserData] = useState<UserData|null>(null)
+    const [userData, setUserData] = useState<UserData | null>(null)
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                const userDocRef = doc(db, databaseName, currentUser.uid);
-                const userSnapshot = await getDoc(userDocRef)
-                const data = userSnapshot.exists() ? userSnapshot.data() : null;
-                setUserData(data)
+                const token = await currentUser.getIdToken();
+                const response = await fetch("/api/auth", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ token }),
+                });
+                if (response.ok) {
+                    const userDocRef = doc(db, databaseName, currentUser.uid);
+                    const userSnapshot = await getDoc(userDocRef)
+                    const data = userSnapshot.exists() ? userSnapshot.data() : null;
+                    setUserData(data)
+                    setUser(auth.currentUser)
+                } else {
+                    setUser(null)
+                }
+            } else {
+                setUser(null)
             }
-            setUser(auth.currentUser)
             setLoading(false);
         })
         return () => unsubscribe()
-    }, [auth])
+    }, [])
 
     const logOut = async () => {
         try {
@@ -137,5 +150,5 @@ export function useAuthUser() {
         }
     }
     console.log(user, "Korisnik u useAuthUser")
-    return { user, loading, logOut,userData }
+    return { user, loading, logOut, userData }
 }
