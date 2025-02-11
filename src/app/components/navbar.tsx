@@ -41,9 +41,6 @@ export default function Navbar() {
           <div className="flex-none">
             <ul className="menu menu-horizontal px-1">
               <li>
-                <Link href={routerConfig.crud} className='font-bold'>CRUD</Link>
-              </li>
-              <li>
                 <Link href={routerConfig.login} className='font-bold'>Log in</Link>
               </li>
               <li>

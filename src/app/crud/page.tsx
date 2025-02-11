@@ -1,9 +1,10 @@
 'use client'
 import { useEffect, useState } from "react"
-import { FetchItems, AddItems, DeleteItems } from "@/lib/firebase/firebase"
+import { FetchItems, AddItems, DeleteItems, useAuthUser } from "@/lib/firebase/firebase"
 import CrudItems from "../components/CrudItems"
 
 export default function Page() {
+  const { user, loading: authLoading } = useAuthUser()
   const [item, setItem] = useState("")
   const [items, setItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -12,17 +13,21 @@ export default function Page() {
   // ovo je najpopularniji lib koji ti resava loading/error/fetching i mnoge druge stvari da ne moras sam to odrzavati/pisati
   useEffect(() => {
     const getItems = async () => {
-      try {
-        const fetchedItems = await FetchItems()
-        setItems(fetchedItems)
-      } catch (error) {
-        console.error()
-      } finally {
+      if (user) {
+        try {
+          const fetchedItems = await FetchItems()
+          setItems(fetchedItems)
+        } catch (error) {
+          console.error()
+        } finally {
+          setLoading(false)
+        }
+      } else {
         setLoading(false)
       }
     }
     getItems()
-  }, [])
+  }, [user])
 
 
   const handleSubmit = async () => {
@@ -34,7 +39,7 @@ export default function Page() {
       setItems(fetchedItems)
       setLoading(false)
     } catch (error) {
-      console.error("Greska u submitanju crud stranice",error)
+      console.error("Greska u submitanju crud stranice", error)
     }
   }
 
@@ -52,6 +57,23 @@ export default function Page() {
     console.log("refreshovana lista")
   }
 
+  if (authLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (!authLoading && !user) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-center">
+        <p className="text-red-500 text-lg font-semibold">
+          Please log in to see the list!!!
+        </p>
+      </div>
+    );
+  }
   return (
     <>
       <div>

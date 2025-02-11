@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, User, setPersistence, browserSessionPersistence, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { useEffect, useState } from "react";
+import { z } from "zod";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
@@ -65,33 +66,52 @@ export const SignInAuthUserWithEmailAndPassword = async (email: string, password
 //The <T extends Record<string, any>> ensures T is a generic object type.
 //Promise <T[]> knows that FetchItems returns an array of objects matching T
 export const FetchItems = async <T extends Record<string, any>>(): Promise<T[]> => {
-    const itemsCollection = collection(db, dataBaseNameItems);
-    const querySnapshot = await getDocs(query(itemsCollection, orderBy("date")));
-    const items: T[] = querySnapshot.docs.map((doc) => ({
-        // docs je property od querySnapshot koji predstavlja niz QueryDocumentSnapshot<DocumentData> objects u Firebase
-        id: doc.id,
-        ...(doc.data() as T),
-    }));
-    console.log(items, "items")
-    return items;
+    try {
+        const itemsCollection = collection(db, dataBaseNameItems);
+        const querySnapshot = await getDocs(query(itemsCollection, orderBy("date")));
+        const items: T[] = querySnapshot.docs.map((doc) => ({
+            // docs je property od querySnapshot koji predstavlja niz QueryDocumentSnapshot<DocumentData> objects u Firebase
+            id: doc.id,
+            ...(doc.data() as T),
+        }));
+        console.log(items, "items")
+        return items;
+
+    } catch (error: any) {
+        if (error.code === "permission-denied") {
+            console.error("Access denied: You must be logged in to view the items.");
+        } else if (error.code === "unavailable") {
+            console.error("Firestore service is currently unavailable. Please try again later.");
+        } else {
+            console.error("An unexpected error occurred while fetching items:", error);
+        }
+        return []
+    }
 };
+const ItemSchema = z.object({
+    itemName: z.string()
+        .min(1, "Item name cannot be empty")
+        .max(100, "Item name is too long")
+        .regex(/^[a-zA-Z0-9\s]+$/, "Invalid characters detected"), // Prevents script injection
+    date: z.date(),
+});
 
 //Dodavanje itema
-export const AddItems = async (item: any) => {
+export const AddItems = async (item: string) => {
     const currentDate = new Date();
-    if (item !== "" || !currentDate) {
-        try {
-            const docRef = await addDoc(collection(db, dataBaseNameItems), {
-                item: item,
-                date: currentDate
-            })
-            console.log("Added item with ID", docRef.id)
-        } catch (error) {
-            console.error("Didn't add item to the firebase", error)
-        }
-    }
-    else {
-        console.error("Input can't be empty string")
+    const { itemName, date } = ItemSchema.parse({
+        itemName: item,
+        date: currentDate,
+    });
+
+    try {
+        const docRef = await addDoc(collection(db, dataBaseNameItems), {
+            itemName,
+            date
+        })
+        console.log("Added item with ID", docRef.id)
+    } catch (error) {
+        console.error("Didn't add item to the firebase", error)
     }
 }
 
