@@ -1,6 +1,5 @@
 'use client'
 import { createUserDocumentFromAuth, signInWithGooglePopup, SignInAuthUserWithEmailAndPassword } from "@/lib/firebase/firebase";
-import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import routerConfig from "../config/routes";
 import { useRouter } from "next/navigation";
@@ -12,8 +11,6 @@ export interface logInFields {
 
 export default function Page() {
   const router = useRouter();
-  const queryClient = useQueryClient()
-  //const {isPending, isError,data,error}= useQuery()
 
   const { register, handleSubmit } = useForm<logInFields>({
     defaultValues: {
@@ -25,11 +22,20 @@ export default function Page() {
 
   const signInSubmit = async ({ email, password }: logInFields) => {
     try {
-      const response = await SignInAuthUserWithEmailAndPassword(email, password)
-      console.log(response,"User data form login")
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      })
+      if (!response.ok) {
+        throw new Error("Log in failed")
+      }
+      const data = await response.json();
+      // const data = await SignInAuthUserWithEmailAndPassword(email, password)
+      console.log(data, "User data form login")
       router.push(routerConfig.home);
     } catch (error) {
-      console.error(error)
+      console.error("Login Error", error)
     }
   }
 
@@ -37,7 +43,6 @@ export default function Page() {
   const SignIn = async () => {
     const { user } = await signInWithGooglePopup();
     const userDocRef = await createUserDocumentFromAuth(user)
-    queryClient.setQueryData(["authUser"], user)
     router.push(routerConfig.home);
     console.log(userDocRef, "UserDocRef")
   }

@@ -138,7 +138,7 @@ export function useAuthUser() {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 const token = await currentUser.getIdToken();
-                const response = await fetch("/api/auth", {
+                const response = await fetch("/api/auth/token", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
