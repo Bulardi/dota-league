@@ -1,37 +1,35 @@
 import { adminAuth } from "@/lib/firebase/firebaseadmin";
+import { getAuth } from "firebase-admin/auth";
 import { NextResponse } from "next/server";
+import { serialize } from "cookie"; // npm install cookie da bih koristio ovaj package
 import { z } from "zod";
 
-const singInFormat = z.object({
+const signInFormat = z.object({
     email: z.string().email(),
     password: z.string().min(8)
 })
 
 export async function POST(req: Request) {
     try {
-        console.log("pocetak")
+        console.log("Checking request method:", req.method);
+        console.log("Request headers:", req.headers);
         const body = await req.json();
-        const { email, password } = singInFormat.parse(body)
-        console.log("Signing in user:", email)
-        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, returnSecureToken: true })
-        })
+        console.log(body, "BODY U RUTI")
+        const { email, password } = signInFormat.parse(body)
+        const user = await getAuth().getUserByEmail(email)
+        const token = await adminAuth.createCustomToken(user.uid)
+        console.log(user, token, "Korisnik i token sa sign in rute")
+        const cookie = serialize("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7, // 7 days
+        });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error("Firebase Sign-In Error:", data);
-            return NextResponse.json({ error: data.error?.message || "Unauthorized" }, { status: 401 });
-        }
-        console.log("Api returns data")
-
-        return NextResponse.json({ token: data.idToken, user: data }, { status: 200 })
-
+        return NextResponse.json({ user, token }, { headers: { "Set-Cookie": cookie } })
     } catch (error) {
-
-        console.log('Login Error', error);
-        return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+        console.log(error, "ERROR NA RUTI")
+        return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 }

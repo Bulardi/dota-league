@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import routerConfig from '../config/routes'
-import {useAuthUser} from '@/lib/firebase/firebase'
+import { AuthContextType, useAuth } from '@/lib/context/authContext'
 
 export default function Navbar() {
-  const { user, loading, logOut } = useAuthUser()
+  const { user, loading, logout } = useAuth() as AuthContextType
 
   if (loading) {
     return (
@@ -28,7 +28,7 @@ export default function Navbar() {
                 <Link href={routerConfig.crud} className='font-bold'>CRUD</Link>
               </li>
               <li>
-                <Link onClick={(logOut)} href={routerConfig.home} className='font-bold'>Log Out</Link>
+                <Link onClick={(logout)} href={routerConfig.home} className='font-bold'>Log Out</Link>
               </li>
             </ul>
           </div>

@@ -13,10 +13,6 @@ export async function POST(req: Request) {
 
     console.log("Validating token..."); // Debugging
 
-    if (!token) {
-      return NextResponse.json({ error: "Missing token" }, { status: 400 });
-    }
-
     const decodedToken = await adminAuth.verifyIdToken(token);
 
     console.log("Token verified:", decodedToken);

@@ -126,49 +126,58 @@ export const DeleteItems = async (itemId: string) => {
     }
 }
 
-interface UserData {
-    name?: string
-}
-export function useAuthUser() {
-    const [user, setUser] = useState<User | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [userData, setUserData] = useState<UserData | null>(null)
+// interface UserData {
+//     name?: string
+// }
+// export function useAuthUser() {
+//     const [user, setUser] = useState<User | null>(null);
+//     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                const token = await currentUser.getIdToken();
-                const response = await fetch("/api/auth/token", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ token }),
-                });
-                if (response.ok) {
-                    const userDocRef = doc(db, databaseName, currentUser.uid);
-                    const userSnapshot = await getDoc(userDocRef)
-                    const data = userSnapshot.exists() ? userSnapshot.data() : null;
-                    setUserData(data)
-                    setUser(auth.currentUser)
-                } else {
-                    setUser(null)
-                }
-            } else {
-                setUser(null)
-            }
-            setLoading(false);
-        })
-        return () => unsubscribe()
-    }, [])
+//     // Load user from localStorage on mount
+//     useEffect(() => {
+//         const storedUser = localStorage.getItem("user");
+//         if (storedUser) {
+//             setUser(JSON.parse(storedUser));
+//         }
+//         setLoading(false);
+//     }, []);
 
-    const logOut = async () => {
-        try {
-            await signOut(auth)
-        } catch (error) {
-            console.error("Error logging out", error)
-        }
-    }
-    console.log(user, "Korisnik u useAuthUser")
-    return { user, loading, logOut, userData }
-}
+//     // Function to log in a user via API
+//     const login = async (email: string, password: string) => {
+//         setLoading(true);
+//         try {
+//             const response = await fetch("/api/auth/login", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({ email, password }),
+//             });
+
+//             const data = await response.json();
+
+//             if (response.ok) {
+//                 setUser(data.user);
+//                 localStorage.setItem("user", JSON.stringify(data.user)); // Store user data
+//                 return data.user; // Return user data for further use
+//             } else {
+//                 throw new Error(data.error || "Login failed");
+//             }
+//         } catch (error) {
+//             console.error("Login Error:", error);
+//             return null;
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     const logOut = async () => {
+//         try {
+//             await signOut(auth)
+//             localStorage.removeItem("user")
+//             setUser(null)
+//         } catch (error) {
+//             console.error("Error logging out", error)
+//         }
+//     }
+//     console.log(user, "Korisnik u useAuthUser")
+//     return { user, loading, logOut, login }
+// }

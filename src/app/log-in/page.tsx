@@ -3,6 +3,7 @@ import { createUserDocumentFromAuth, signInWithGooglePopup, SignInAuthUserWithEm
 import { useForm } from "react-hook-form";
 import routerConfig from "../config/routes";
 import { useRouter } from "next/navigation";
+import { AuthContextType, useAuth } from "@/lib/context/authContext";
 
 export interface logInFields {
   email: string,
@@ -10,8 +11,8 @@ export interface logInFields {
 }
 
 export default function Page() {
+  const { login } = useAuth() as AuthContextType
   const router = useRouter();
-
   const { register, handleSubmit } = useForm<logInFields>({
     defaultValues: {
       email: '',
@@ -22,20 +23,10 @@ export default function Page() {
 
   const signInSubmit = async ({ email, password }: logInFields) => {
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      })
-      if (!response.ok) {
-        throw new Error("Log in failed")
-      }
-      const data = await response.json();
-      // const data = await SignInAuthUserWithEmailAndPassword(email, password)
-      console.log(data, "User data form login")
+      await login(email, password)
       router.push(routerConfig.home);
     } catch (error) {
-      console.error("Login Error", error)
+      console.error("Login failed", error)
     }
   }
 
